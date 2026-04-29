@@ -1,0 +1,38 @@
+{
+  "name": "dream3dx",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.13.5",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
+    "@supabase/supabase-js": "^2.43.1",
+    "@types/three": "^0.183.1",
+    "bcryptjs": "^2.4.3",
+    "google-auth-library": "^10.6.2",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.378.0",
+    "mongoose": "^8.3.4",
+    "next": "14.2.3",
+    "razorpay": "^2.9.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "typescript": "^5"
+  }
+}
