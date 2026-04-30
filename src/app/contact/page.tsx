@@ -28,8 +28,11 @@ export default function ContactPage() {
     <div className="container animate-fade-in" style={{ padding: '4rem 1.5rem', minHeight: '80vh' }}>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Have an Idea?</h1>
-        <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto' }}>
+        <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto', marginBottom: '1rem' }}>
           Don't have a 3D design yet but have a great idea? Or just want to reach out? Send us a message and we'll help bring it to life!
+        </p>
+        <p style={{ fontWeight: 'bold', color: 'var(--primary)' }}>
+          Prefer to talk? Call us at: 9820422519
         </p>
       </div>
 
