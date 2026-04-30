@@ -5,11 +5,13 @@ import { UploadCloud, CheckCircle, Package } from "lucide-react";
 import { calculateStlVolume } from "@/lib/stlParser";
 import { useRouter } from "next/navigation";
 import ThreeModelViewer from "@/components/ThreeModelViewer";
+import { supabase } from "@/lib/supabaseServer";
 
 export default function QuotePage() {
   const [file, setFile] = useState<File | null>(null);
   const [volume, setVolume] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -45,17 +47,49 @@ export default function QuotePage() {
     }
   };
 
-  const proceedToCheckout = () => {
+  const proceedToCheckout = async () => {
     if (!file || !volume) return;
-    const { total } = getCalculatedPrice();
-    // In a real app we'd upload file to Supabase first, get URL, then save Order.
-    // For mockup, we move to a checkout form page with the temporary states.
-    sessionStorage.setItem("pendingOrder", JSON.stringify({
-      fileName: file.name,
-      volume: volume,
-      price: total
-    }));
-    router.push("/checkout");
+    setError("");
+
+    // --- Auth guard: verify session before proceeding ---
+    try {
+      const authRes = await fetch("/api/auth/me");
+      if (!authRes.ok) {
+        // Not logged in — redirect to login with return path
+        router.push("/login?redirect=/quote");
+        return;
+      }
+    } catch {
+      router.push("/login?redirect=/quote");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const { total } = getCalculatedPrice();
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const { data, error: uploadError } = await supabase.storage.from('dream3dx').upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('dream3dx').getPublicUrl(fileName);
+
+      sessionStorage.setItem("pendingOrder", JSON.stringify({
+        fileName: file.name,
+        fileUrl: publicUrl,
+        volume: volume,
+        price: total
+      }));
+
+      router.push("/checkout");
+    } catch (err: any) {
+      console.error(err);
+      setError(`Upload Failed: ${err.message || "Unknown error"}`);
+      setIsUploading(false);
+    }
   };
 
   const getCalculatedPrice = () => {
@@ -74,8 +108,8 @@ export default function QuotePage() {
       </p>
 
       {!file && (
-        <div 
-          className="glass-panel" 
+        <div
+          className="glass-panel"
           style={{ width: '100%', maxWidth: '600px', border: '2px dashed var(--primary)', textAlign: 'center', padding: '4rem 2rem', cursor: 'pointer', transition: 'all 0.3s ease' }}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
@@ -97,7 +131,14 @@ export default function QuotePage() {
         </div>
       )}
 
-      {file && volume !== null && !isCalculating && (
+      {isUploading && (
+        <div className="glass-panel" style={{ width: '100%', maxWidth: '600px', textAlign: 'center' }}>
+          <h3>Uploading Model...</h3>
+          <p style={{ color: 'var(--text-muted)' }}>Securely transferring your file to our servers</p>
+        </div>
+      )}
+
+      {file && volume !== null && !isCalculating && !isUploading && (
         <div className="glass-panel" style={{ width: '100%', maxWidth: '600px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
             <Package size={32} color="var(--accent)" />
@@ -135,6 +176,8 @@ export default function QuotePage() {
               ₹{getCalculatedPrice().total}
             </span>
           </div>
+
+          {error && <div style={{ color: 'var(--error)', marginTop: '1rem', textAlign: 'center', background: 'rgba(239,68,68,0.1)', padding: '0.5rem', borderRadius: '0.5rem' }}>{error}</div>}
 
           <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
             <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setFile(null)}>Upload Another</button>

@@ -56,8 +56,13 @@ export default function UserDashboard() {
           {orders.map((order: any) => (
             <div key={order._id} className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>ID: {order._id.substring(0, 8)}...</span>
+                <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary)' }}>Ref: {order.referenceId || order._id.substring(0, 8)}</span>
                 <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{new Date(order.createdAt).toLocaleDateString()}</span>
+              </div>
+              
+              <div style={{ marginBottom: '0.5rem' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Service</div>
+                <div style={{ fontWeight: 600 }}>{order.orderType || "Standard Printing"}</div>
               </div>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -71,6 +76,11 @@ export default function UserDashboard() {
                     {order.deliverySpeed} Delivery
                   </div>
                 </div>
+              </div>
+
+              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
+                <p style={{ color: 'var(--text-muted)' }}>Need help? Call us with your Reference ID:</p>
+                <a href="tel:9820422519" style={{ fontWeight: 700, color: 'var(--primary)', textDecoration: 'none' }}>+91 9820422519</a>
               </div>
             </div>
           ))}

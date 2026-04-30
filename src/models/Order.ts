@@ -2,6 +2,11 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IOrder extends Document {
   userEmail: string;
+  customerName: string;
+  phoneNumber: string;
+  shippingAddress: string;
+  orderType: string;
+  referenceId: string;
   fileUrl: string;
   volumeOrSize: number;
   amount: number;
@@ -14,6 +19,11 @@ export interface IOrder extends Document {
 
 const OrderSchema: Schema = new Schema({
   userEmail: { type: String, required: true },
+  customerName: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
+  shippingAddress: { type: String, required: true },
+  orderType: { type: String, required: true },
+  referenceId: { type: String, required: true, unique: true },
   fileUrl: { type: String, required: true },
   volumeOrSize: { type: Number, required: true },
   amount: { type: Number, required: true },
